@@ -6,7 +6,9 @@
  */
 package ueb18;
 
+import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class Lager{
@@ -258,13 +260,24 @@ public class Lager{
      * @return
      */
     public Artikel[] getSorted (BiPredicate biPredicate){
+
         for (int i = 0 ; i <= lagerGroesse ; i++){
             Artikel einArtikel = lagerFeld[i];
             Artikel andereArtikel = lagerFeld[i+1];
             if(biPredicate.test(einArtikel, andereArtikel)){
                 swap(i, i+1);
-            };
+            }
+            if(!biPredicate.test(einArtikel, andereArtikel)){
+                i = 0;
+            }
         }
+        //for (int i = 0 ; i <= lagerGroesse ; i++){
+            //Artikel einArtikel = lagerFeld[i];
+            //Artikel andereArtikel = lagerFeld[i+1];
+            //if(biPredicate.test(einArtikel, andereArtikel)){
+                //swap(i, i+1);
+            //};
+        //}
       return lagerFeld;
     }
 
@@ -274,9 +287,10 @@ public class Lager{
         lagerFeld[o] = lagerFeld[p];
         lagerFeld[p] = help;
     }
-    public void applyToArticles(Predicate predicate){
+    public void applyToArticles(Consumer consumer){
         for (Artikel einArtiekl:lagerFeld) {
-
+            consumer.accept(einArtiekl);
         }
     }
+
 }
