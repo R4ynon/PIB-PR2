@@ -80,6 +80,7 @@ public class Ueb18Fassade {
             String s = artikel.getArt() + "Sonderangebot";
         };
         lager.applyToArticles(addSuffix);
+        //test
     }
 
     /**
