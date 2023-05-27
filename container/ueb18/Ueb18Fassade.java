@@ -90,6 +90,7 @@ public class Ueb18Fassade {
      * @param lager Das Lager mit den Artikeln, deren Preise und Bezeichnungen geaendert werden sollen.
      */
     public void aufgabe_c_iv(Lager lager) {
+        //muss geaendert werden
         Consumer<Artikel> c = (x) -> x.aenderePreis(-10.0);
         lager.applyToArticles(c);
 

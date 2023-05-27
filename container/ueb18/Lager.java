@@ -19,6 +19,8 @@ public class Lager{
     private Artikel[] lagerFeld;
     private final int lagerGroesse;
     private int lagerBestand;
+    // bound to changes
+    private Artikel [] filteredLager;
     
     
     /**
@@ -260,7 +262,7 @@ public class Lager{
      * @return
      */
     public Artikel[] getSorted (BiPredicate biPredicate){
-
+        //noch eine schleife von int i = 0 bis <= lagergroesse
         for (int i = 0 ; i <= lagerGroesse ; i++){
             Artikel einArtikel = lagerFeld[i];
             Artikel andereArtikel = lagerFeld[i+1];
@@ -291,6 +293,27 @@ public class Lager{
         for (Artikel einArtiekl:lagerFeld) {
             consumer.accept(einArtiekl);
         }
+    }
+    public Artikel[] filter(Predicate predicate){
+        int i = 0;
+        this.filteredLager = new Artikel[lagerBestand];
+        for (Artikel oneArtikel:lagerFeld
+             ) {
+            if(predicate.test(oneArtikel)){
+                filteredLager[i] = oneArtikel;
+                i++;
+            }
+        }
+        return null;
+    }
+    public void applyToSomeArticles(Predicate predicate, Consumer consumer){
+        for (int i = 0 ; i <= lagerGroesse ; i++){
+            Artikel einArtikel = lagerFeld[i];
+            if(predicate.test(einArtikel)){
+                consumer.accept(einArtikel);
+            }
+        }
+
     }
 
 }
