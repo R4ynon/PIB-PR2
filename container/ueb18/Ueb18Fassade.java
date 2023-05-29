@@ -1,5 +1,6 @@
 package ueb18;
 
+import java.util.concurrent.Callable;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 
@@ -55,7 +56,7 @@ public class Ueb18Fassade {
             }return bestaendig.test(x, y);
         };
 
-        return null;
+        return lager.getSorted(aphabetic);
     }
 
     /**
@@ -146,7 +147,22 @@ public class Ueb18Fassade {
      * @return Eine Liste mit allen Buechern, sortiert nach den Namen der Autoren.
      */
     public Artikel[] aufgabe_h_v(Lager lager) {
-        return null;
+        BiPredicate<Artikel, Artikel> aphabeticAuthor = (x,y) -> {
+            String help1 = x.getArt();
+            String help2 = y.getArt();
+            if(help1.compareTo(help2)<0){
+                return true;
+            } else //if (help1.compareTo(help2)>0) {
+                return false;
+            //}
+        };
+        Predicate <Artikel> buchJaNein = (x) -> {
+            if(x instanceof Buch){
+                return true;
+            }
+            return false;
+        };
+        return lager.getArticels(buchJaNein, aphabeticAuthor);
     }
 
     /**
@@ -159,6 +175,23 @@ public class Ueb18Fassade {
      * @return Alle Buecher vom Autor autor und mit einem Preis, der zwischen minPreis und maxPreis liegt.
      */
     public Artikel[] aufgabe_h_vi(Lager lager, String gesuchterAutor, double minPreis, double maxPreis) {
-        return null;
+        Predicate<Artikel> p1 = (x) -> {
+            if(x instanceof Buch){
+                Artikel artikel = (Buch)x;
+                if(((Buch) x).getAutor().equals(gesuchterAutor) ){
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        Predicate<Artikel> p2 = (x) -> {
+            if(x.getPreis() >= minPreis && x.getPreis() <= maxPreis){
+                return true;
+            }
+            return false;
+        };
+
+        return lager.filterAll(p1, p2);
     }
 }
