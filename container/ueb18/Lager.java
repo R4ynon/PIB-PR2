@@ -6,6 +6,9 @@
  */
 package ueb18;
 
+import java.io.UncheckedIOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -19,6 +22,10 @@ public class Lager{
     private Artikel[] lagerFeld;
     private final int lagerGroesse;
     private int lagerBestand;
+    // bound to changes
+    private Artikel [] filteredLager;
+    private Artikel [] sortedLager;
+
     
     
     /**
@@ -259,38 +266,101 @@ public class Lager{
      * @param biPredicate
      * @return
      */
-    public Artikel[] getSorted (BiPredicate biPredicate){
-
-        for (int i = 0 ; i <= lagerGroesse ; i++){
-            Artikel einArtikel = lagerFeld[i];
-            Artikel andereArtikel = lagerFeld[i+1];
-            if(biPredicate.test(einArtikel, andereArtikel)){
-                swap(i, i+1);
-            }
-            if(!biPredicate.test(einArtikel, andereArtikel)){
-                i = 0;
+    public Artikel[] getSorted (BiPredicate<Artikel, Artikel> biPredicate){
+        this.sortedLager = new Artikel[lagerBestand];
+        sortedLager = lagerFeld;
+        for(int j = 0 ; j < lagerBestand-1; j++){
+            for (int i = 0 ; i < lagerBestand-1-i ; i++) {
+                Artikel einArtikel = lagerFeld[i];
+                Artikel andereArtikel = lagerFeld[i + 1];
+                if (biPredicate.test(einArtikel, andereArtikel)) {
+                    swap(i, i + 1, sortedLager);
+                }
             }
         }
-        //for (int i = 0 ; i <= lagerGroesse ; i++){
-            //Artikel einArtikel = lagerFeld[i];
-            //Artikel andereArtikel = lagerFeld[i+1];
-            //if(biPredicate.test(einArtikel, andereArtikel)){
-                //swap(i, i+1);
-            //};
-        //}
-      return lagerFeld;
+
+      return sortedLager;
     }
 
-    public void swap(int o, int p){
-        Artikel help;
-        help = lagerFeld[o];
-        lagerFeld[o] = lagerFeld[p];
-        lagerFeld[p] = help;
+    /**
+     * Methode, die Arraystellenvertauscht.
+     * @param o Arraystellenwert
+     * @param p Arraystellenwert
+     */
+    public Artikel [] swap(int o, int p, Artikel [] array){
+        Artikel help = array[o];
+        array[o] = array[p];
+        array[p] = help;
+        return array;
     }
     public void applyToArticles(Consumer consumer){
         for (Artikel einArtiekl:lagerFeld) {
             consumer.accept(einArtiekl);
         }
     }
+    public Artikel[] filter(Predicate<Artikel> predicate){
+        int i = 0;
+        this.filteredLager = new Artikel[lagerBestand];
+        for (Artikel oneArtikel:lagerFeld
+             ) {
+            if(predicate.test(oneArtikel)){
+                filteredLager[i] = oneArtikel;
+                i++;
+            }
+        }
+        return filteredLager;
+    }
 
+    /**
+     * Methode applyToSomeArticles, die eine Operation auf die Artikel
+     * anwendet, welche ein bestimmtes Kriterium erfüllen
+     * @param predicate ein übergebenes Suchkriterium
+     * @param consumer
+     */
+    public void applyToSomeArticles(Predicate <Artikel> predicate, Consumer <Artikel> consumer){
+        for (int i = 0 ; i < lagerBestand ; i++){
+            Artikel einArtikel = lagerFeld[i];
+            if(predicate.test(einArtikel)){
+                consumer.accept(einArtikel);
+            }
+        }
+
+    }
+    public Artikel[] getArticels(Predicate <Artikel> predicateEins, BiPredicate <Artikel, Artikel> predicateZwei){
+        sortedLager = getSorted(predicateZwei);
+        Artikel [] xLager = new Artikel[sortedLager.length];
+        for (int i = 0 ; i < sortedLager.length ; i++){
+            Artikel einArtikel = sortedLager[i];
+            if(predicateEins.test(einArtikel)){
+                xLager[i]=einArtikel;
+            }
+        }
+        return xLager;
+    }
+
+    /**
+     * Methode filterAll, die eine beliebige Menge an Filterkriterien als
+     * Parameter entgegennimmt und die Artikel des Lagers zurück gibt, die alle Filterkriterien erfüllen.
+     * @param predicates Filterkriterium
+     * @return sortedLager nach Filterkriterium sortiertes Lager.
+     */
+    public Artikel[] filterAll(Predicate... predicates){
+        this.sortedLager = new Artikel[lagerBestand];
+        int help = 0;
+        boolean hilfe = true;
+        for(int i = 0; i < lagerBestand; i++){
+            Artikel einArtikel = lagerFeld[i];
+            for(int j = 0; j < predicates.length; j++){
+                if(predicates[j].test(einArtikel) == false){
+                    hilfe = false;
+
+                }
+            }
+            if(hilfe == true){
+                this.sortedLager[help] = lagerFeld[i];
+                help++;
+            }
+        }
+        return sortedLager;
+    }
 }
