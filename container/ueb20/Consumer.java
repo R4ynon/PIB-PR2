@@ -79,4 +79,12 @@ public class Consumer {
             timestampsForCecksummMap.put(i, new LinkedList<Double>());
         }
     }
+
+    public HashMap<Integer, LinkedList<Double>> getTimestampsForCecksummMap() {
+        return timestampsForCecksummMap;
+    }
+
+    public HashMap<Integer, Integer> getChecksummCountDifferentOccMap() {
+        return checksummCountDifferentOccMap;
+    }
 }
